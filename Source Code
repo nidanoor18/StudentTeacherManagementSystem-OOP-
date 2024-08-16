@@ -1,0 +1,449 @@
+/*GROUP MEMBERS
+  
+NIDA NOOR       BCS233215
+AMNA KHALID     BCS233218
+IMAN FARHAT     BCS233082
+*/
+
+//    STUDENT MANAGEMENT SYSTEM
+
+
+
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+// Base class for records
+class records {
+protected:
+    string name;
+    int age;
+    string Id_number;
+    string email;
+    string password;
+    string qualifications;
+
+public:
+
+     //  <<<< ABSTRACTION >>>>
+
+    virtual void get_data() = 0;
+    virtual void show_data() = 0;
+    virtual void writing_in_file() = 0;
+    virtual void view_all_data() = 0;
+    virtual void search_data(string search) = 0;
+
+// Initialize age in the constructor
+    records() : age(0) {} 
+};
+
+       //   <<<<<INHERITANCE >>>>>
+
+// Derived Student class
+class student : public records {
+private:
+    int total_marks;
+    int obtained_marks;
+    string board_name;
+    float percentage;
+
+public:
+    student();
+    void eligibility();
+    void get_data();
+    void show_data();
+    void writing_in_file();
+    void view_all_data();
+    void search_data(string search);
+    void scholarship_era();
+    void view_scholarship_data();
+    void new_student_data(); // New function to enter new student data
+};
+
+// Derived Teacher class
+class teacher : public records {
+private:
+    string qualified_degree_from;
+    string grade;
+    string course_pursued;
+
+public:
+    void get_data();
+    void show_data();
+    void writing_in_file();
+    void view_all_data();
+    void search_data(string search);
+};
+
+// Management classes
+// Management classes
+class s_management {
+protected:
+    string password;
+    int input1;
+
+public:
+    s_management() : input1(0) {} // Initialize input1 in the constructor
+
+    void func(student obj);
+};
+
+class t_management {
+protected:
+    string password;
+    int input1;
+
+public:
+    t_management() : input1(0) {} // Initialize input1 in the constructor
+
+    void func(teacher obj);
+};
+
+
+// Definitions of the student class methods...
+student::student()
+    : total_marks(0), obtained_marks(0), percentage(0.0f) {
+    name = "";
+    age = 0;
+    Id_number = "";
+    email = "";
+    password = "";
+    qualifications = "";
+    board_name = "";
+}
+
+void student::eligibility() {
+    cout << "Eligibility Criteria:" << endl;
+    cout << "You must have completed your intermediate degree with above 60% marks." << endl;
+}
+
+void student::get_data() {
+    cout << "Enter your full Name:";
+ cin >> name;
+    cout << "Enter Your Age:";
+ cin >> age;
+    cout << "Enter ID card Number:";
+ cin >> Id_number;
+    cout << "Enter valid Email:"; 
+ cin >> email;
+    cout << "Enter Password for account:"; 
+ cin >> password;
+    cout << "Enter your Qualifications:";
+ cin >> qualifications;
+    cout << "Enter board/university from where you qualified your previous exam:"; 
+ cin >> board_name;
+    cout << "Enter total marks of 'FSC':"; 
+ cin >> total_marks;
+    cout << "Enter obtained marks in fsc:"; 
+cin >> obtained_marks;
+
+    percentage = (static_cast<float>(obtained_marks) * 100) / total_marks;
+
+    if (obtained_marks < (60 * total_marks) / 100) {
+        cout << "Sorry, you do not fulfill the eligibility criteria." << endl;
+    }
+
+    if (obtained_marks > (90 * total_marks) / 100) {
+        cout << "Congratulations! You got a full scholarship." << endl;
+        scholarship_era();
+    }
+}
+
+void student::show_data() {
+    cout << "Name:" << name << " Age:" << age << endl;
+    cout << "ID card number:" << Id_number << " Email:" << email << endl;
+    cout << "Password for account:" << password << " Qualifications:" << qualifications << endl;
+    cout << "Total marks:" << total_marks << " Obtained marks: " << obtained_marks << endl;
+    cout << "Board/university from where you qualified your previous exam:" << board_name << endl;
+    cout << "Percentage: " << percentage << "%" << endl;
+}
+
+//             <<<< FILE HANDLING >>>>
+
+void student::writing_in_file() {
+    ofstream file;
+    file.open("student_data.txt", ios::app);
+    if (!file.is_open()) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+    file << name << " " << age << " " << Id_number << " " << email << " " << password << " " << qualifications << endl;
+    file << total_marks << " " << obtained_marks << " " << board_name << " " << percentage << endl;
+    file.close();
+}
+
+void student::view_all_data() {
+    ifstream file("student_data.txt");
+    if (!file.is_open()) {
+// Create the file if it does not exist
+        ofstream newFile("student_data.txt"); 
+        newFile.close();
+        cout << "File created. Please enter student data first." << endl;
+        return;
+    }
+    while (file >> name >> age >> Id_number >> email >> password >> qualifications >> total_marks >> obtained_marks >> board_name >> percentage) {
+        show_data();
+    }
+    file.close();
+}
+
+void student::search_data(string search) {
+    ifstream file("student_data.txt");
+    if (!file.is_open()) {
+// Create the file if it does not exist
+        ofstream newFile("student_data.txt"); 
+        newFile.close();
+        cout << "File created. Please enter student data first." << endl;
+        return;
+    }
+    bool found = false;
+    while (file >> name >> age >> Id_number >> email >> password >> qualifications >> total_marks >> obtained_marks >> board_name >> percentage) {
+        if (password == search) {
+            found = true;
+            break;
+        }
+    }
+    file.close();
+    if (found) {
+        cout << "Student record found!" << endl;
+        show_data();
+    }
+    else {
+        cout << "Student record not found." << endl;
+    }
+}
+
+void student::scholarship_era() {
+    ofstream file;
+    file.open("scholarship_students.txt", ios::app);
+    if (!file.is_open()) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+    file << name << " " << age << " " << Id_number << " " << email << " " << password << " " << qualifications << endl;
+    file << total_marks << " " << obtained_marks << " " << board_name << " " << percentage << endl;
+    file.close();
+}
+
+void student::view_scholarship_data() {
+    ifstream file("scholarship_students.txt");
+    if (!file.is_open()) {
+        ofstream newFile("scholarship_students.txt"); // Create the file if it does not exist
+        newFile.close();
+        cout << "File created. Please enter scholarship student data first." << endl;
+        return;
+    }
+    while (file >> name >> age >> Id_number >> email >> password >> qualifications >> total_marks >> obtained_marks >> board_name >> percentage) {
+        show_data();
+    }
+    file.close();
+}
+
+void student::new_student_data() {
+    get_data();
+    writing_in_file();
+}
+
+// Definitions of the teacher class methods...
+
+      //   <<<< Runtime Polymorphism  >>>>
+void teacher::get_data() {
+    cout << "Enter your full Name:"; cin >> name;
+    cout << "Enter Your Age:"; cin >> age;
+    cout << "Enter ID card Number:"; cin >> Id_number;
+    cout << "Enter valid Email:"; cin >> email;
+    cout << "Enter Password for account:"; cin >> password;
+    cout << "Enter your qualifications:"; cin >> qualifications;
+    cout << "Enter university from where you qualified your degree:"; cin >> qualified_degree_from;
+    cout << "Enter Your Grade:"; cin >> grade;
+    cout << "Enter Course Pursued:"; cin >> course_pursued;
+}
+
+void teacher::show_data() {
+    cout << "Name:" << name << " Age:" << age << endl;
+    cout << "ID card number:" << Id_number << " Email:" << email << endl;
+    cout << "Password for account:" << password << " Qualifications:" << qualifications << endl;
+    cout << "Qualified degree from:" << qualified_degree_from << " Grade:" << grade << endl;
+    cout << "Course Pursued:" << course_pursued << endl;
+}
+
+void teacher::writing_in_file() {
+    ofstream file;
+    file.open("teacher_data.txt", ios::app);
+    if (!file.is_open()) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+    file << name << " " << age << " " << Id_number << " " << email << " " << password << " " << qualifications << endl;
+    file << qualified_degree_from << " " << grade << " " << course_pursued << endl;
+    file.close();
+}
+
+void teacher::view_all_data() {
+    ifstream file("teacher_data.txt");
+    if (!file.is_open()) {
+        ofstream newFile("teacher_data.txt"); // Create the file if it does not exist
+        newFile.close();
+        cout << "File created. Please enter teacher data first." << endl;
+        return;
+    }
+    while (file >> name >> age >> Id_number >> email >> password >> qualifications >> qualified_degree_from >> grade >> course_pursued) {
+        show_data();
+    }
+    file.close();
+}
+
+void teacher::search_data(string search) {
+    ifstream file("teacher_data.txt");
+    if (!file.is_open()) {
+        ofstream newFile("teacher_data.txt"); // Create the file if it does not exist
+        newFile.close();
+        cout << "File created. Please enter teacher data first." << endl;
+        return;
+    }
+    bool found = false;
+    while (file >> name >> age >> Id_number >> email >> password >> qualifications >> qualified_degree_from >> grade >> course_pursued) {
+        if (password == search) {
+            found = true;
+            break;
+        }
+    }
+    file.close();
+    if (found) {
+        cout << "Teacher record found!" << endl;
+        show_data();
+    }
+    else {
+        cout << "Teacher record not found." << endl;
+    }
+}
+
+// Management classes implementations
+
+void s_management::func(student obj) {
+    int choice;
+    cout << "To view Students Records, Press '1'" << endl;
+    cout << "To enter New Student Data, Press '2'" << endl; // Added option for new student data
+    cin >> input1;
+    if (input1 == 1) {
+        obj.view_all_data();
+    }
+    else if (input1 == 2) {
+        obj.new_student_data();
+    }
+    cout << "Do you want to search for a particular Student data? (PRESS 1)" << endl;
+    cin >> choice;
+    if (choice == 1) {
+        cout << "Enter Student password for search:" << endl;
+        cin >> password;
+        obj.search_data(password);
+    }
+    cout << "Do you want to view Scholarship Holders data? (PRESS 1)" << endl;
+    cin >> choice;
+    if (choice == 1) {
+        obj.view_scholarship_data();
+    }
+}
+
+void t_management::func(teacher obj) {
+    int choice;
+    cout << "To view Teacher Records, Press '1'" << endl;
+    cin >> input1;
+    if (input1 == 1) {
+        obj.view_all_data();
+    }
+    cout << "Do you want to search for a particular Teacher data? (PRESS 1)" << endl;
+    cin >> choice;
+    if (choice == 1) {
+        cout << "Enter Teacher password for search:" << endl;
+        cin >> password;
+        obj.search_data(password);
+    }
+}
+
+// Main function to demonstrate functionality
+int main() {
+    int select;
+
+    student s_obj;
+    teacher t_obj;
+
+    while (true) {
+        cout << "Choose which record you want to display or search" << endl;
+        cout << "1) Student Record" << endl;
+        cout << "2) Teacher Record" << endl;
+        cout << "3) Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> select;
+
+        switch (select) {
+        case 1: {
+            s_management s_m;
+            int option;
+            cout << "1) Enter New Student Data" << endl;
+            cout << "2) View Student Records" << endl;
+            cout << "3) Exit" << endl;
+            cout << "Enter your choice: ";
+            cin >> option;
+
+//Switch Statement
+            switch (option) {
+            case 1:
+                cout << "Enter student data:" << endl;
+                s_obj.new_student_data();
+                break;
+            case 2:
+                s_m.func(s_obj);
+                break;
+            case 3:
+                cout << "Exiting..." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice. Please enter again." << endl;
+                break;
+            }
+            break;
+        }
+        case 2: {
+            t_management t_m;
+            int option;
+            cout << "1) Enter New Teacher Data" << endl;
+            cout << "2) View Teacher Records" << endl;
+            cout << "3) Exit" << endl;
+            cout << "Enter your choice: ";
+            cin >> option;
+
+            switch (option) {
+            case 1:
+                cout << "Enter teacher data:" << endl;
+                t_obj.get_data();
+                t_obj.writing_in_file();
+                break;
+            case 2:
+                t_m.func(t_obj);
+                break;
+            case 3:
+                cout << "Exiting..." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice. Please enter again." << endl;
+                break;
+            }
+            break;
+        }
+        case 3: {
+            cout << "Exiting..." << endl;
+            return 0;
+        }
+        default: {
+            cout << "Invalid choice. Please enter again." << endl;
+            break;
+        }
+        }
+    }
+
+    return 0;
+}
+
+ 
